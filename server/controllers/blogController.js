@@ -130,3 +130,38 @@ export const toggleLike = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+export const userProfile = async (req, res) => {
+    try {
+        //const userDecode = verifyToken(req); //will be used when we need to verify wheather the cuurent user and the profile opened is same or not so that, we can include the option of edit profile,etc
+        const { username, role } = req.body;
+        const userInfo = await User.findOne({ username });
+
+        if (!userInfo) {
+            return res.json({
+                message: `User ${username} not found`
+            });
+        }
+        if (userInfo.role !== role) {
+            return res.json({
+                message: `${username} not found for ${role}`
+            });
+        }
+        const blogs = await Blog.find({ author: userInfo._id });
+        console.log(blogs);
+
+        res.json({
+            success: true,
+            user: {
+                name: userInfo.name,
+                bio: userInfo.bio,
+                profilePicture: userInfo.profilePicture,
+            },
+            blogs: blogs
+        })
+
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Server error" + error.message });
+    }
+}

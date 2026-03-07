@@ -42,9 +42,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        console.log(username,password);
         const user = await User.findOne({ username }).select('+password');
-        console.log(user);
         if (user && (await bcrypt.compare(password, user.password))) {
             res.status(200).json({
                 success: true,
