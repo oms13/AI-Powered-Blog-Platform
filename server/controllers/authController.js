@@ -5,8 +5,8 @@ import verifyToken from '../utils/verifyToken.js';
 
 export const signup = async (req, res) => {
     try {
-        const { name,username, email, password, role } = req.body;
-        
+        const { name, username, email, password, role } = req.body;
+
         const userExists = await User.findOne({ username });
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
@@ -18,7 +18,7 @@ export const signup = async (req, res) => {
             password,
             role
         });
-        
+
         if (user) {
             res.status(201).json({
                 token: generateToken(user._id, user.role),
@@ -62,7 +62,7 @@ export const login = async (req, res) => {
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
         }
-        
+
     } catch (error) {
         res.status(500).json({ message: 'Server Error: ' + error.message });
     }
@@ -73,14 +73,14 @@ export const verifyUserToken = async (req, res) => {
         console.log("Entered")
         const userId = verifyToken(req)?.id || false;
         console.log(userId);
-        
-        const user = await User.findById( userId );
+
+        const user = await User.findById(userId);
         console.log(user);
-        
+
         if (user) {
             res.json({
                 success: true,
-                user:{
+                user: {
                     _id: user._id,
                     name: user.name,
                     username: user.username,

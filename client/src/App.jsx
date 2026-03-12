@@ -7,6 +7,7 @@ import CreateBlog from './Pages/CreateBlog.jsx';
 import BlogPost from './Pages/BlogPost.jsx';
 import FeedPage from './Pages/FeedPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import PublicRoute from './components/PublicRoute.jsx';
 
 import './App.css';
 
@@ -16,8 +17,14 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<AuthPage mode={true} />} />
-          <Route path="/signup" element={<AuthPage mode={false} />} />
+          <Route
+            path="/login"
+            element={<PublicRoute><AuthPage mode={true} /></PublicRoute>}
+          />
+          <Route
+            path="/signup"
+            element={<PublicRoute><AuthPage mode={false} /></PublicRoute>}
+          />
 
           <Route
             path="/reader/:username"
