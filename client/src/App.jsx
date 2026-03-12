@@ -5,6 +5,7 @@ import AuthPage from './Pages/AuthPage.jsx';
 import UserPage from './Pages/UserPage.jsx';
 import CreateBlog from './Pages/CreateBlog.jsx';
 import BlogPost from './Pages/BlogPost.jsx';
+import FeedPage from './Pages/FeedPage.jsx';
 
 import './App.css'
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/author/:username" element={<UserPage role="author" />} />
           <Route path="/admin" element={<UserPage role="admin" />} />
           <Route path="/create-blog" element={<CreateBlog />} />
+          <Route path="/blog" element={<FeedPage />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
         </Routes>
       </Router>

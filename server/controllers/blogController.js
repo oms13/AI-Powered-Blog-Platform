@@ -165,3 +165,20 @@ export const userProfile = async (req, res) => {
         res.status(500).json({ message: "Server error" + error.message });
     }
 }
+
+export const getFeed = async (req, res) => {
+  try {
+    const blogs = await Blog.find()
+      .sort({ createdAt: -1 })
+      .populate('author', 'name profilePicture')
+      .exec();
+
+    res.json({
+      success: true,
+      blogs: blogs
+    });
+  } catch (error) {
+    console.error("Error fetching feed:", error);
+    res.status(500).json({ success: false, message: "Server error while fetching feed" });
+  }
+};
