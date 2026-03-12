@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
+import verifyToken from '../utils/verifyToken.js';
 
 export const signup = async (req, res) => {
     try {
@@ -64,5 +65,33 @@ export const login = async (req, res) => {
         
     } catch (error) {
         res.status(500).json({ message: 'Server Error: ' + error.message });
+    }
+};
+
+export const verifyUserToken = async (req, res) => {
+    try {
+        console.log("Entered")
+        const userId = verifyToken(req)?.id || false;
+        console.log(userId);
+        
+        const user = await User.findById( userId );
+        console.log(user);
+        
+        if (user) {
+            res.json({
+                success: true,
+                user:{
+                    _id: user._id,
+                    name: user.name,
+                    username: user.username,
+                    email: user.email,
+                    profilePicture: user.profilePicture,
+                    isVerified: user.isVerified
+                }
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error" + error.message });
     }
 };
