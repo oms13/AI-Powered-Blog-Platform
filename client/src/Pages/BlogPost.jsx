@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios'
-import { BrainCircuit, Copy, CheckCircle, ArrowLeft, Calendar, User, Heart } from 'lucide-react';
+import axios from 'axios';
+import {
+  BrainCircuit, Copy, CheckCircle, ArrowLeft,
+  Calendar, Heart, Eye, Share2
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const CodeBlock = ({ code, language }) => {
   const [isCopied, setIsCopied] = useState(false);
@@ -13,21 +17,28 @@ const CodeBlock = ({ code, language }) => {
   };
 
   return (
-    <div className="relative group my-8 rounded-xl overflow-hidden bg-[#1e1e1e] border border-gray-800 shadow-lg">
-      <div className="flex justify-between items-center px-4 py-2 bg-[#2d2d2d] border-b border-gray-800">
-        <span className="text-xs font-mono text-gray-400 uppercase">{language || 'text'}</span>
+    <div className="relative group my-10 rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-2xl">
+      <div className="flex justify-between items-center px-4 py-3 bg-gray-950/50 border-b border-gray-800">
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+          </div>
+          <span className="ml-2 text-xs font-mono text-gray-400 uppercase tracking-wider">{language || 'text'}</span>
+        </div>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors bg-gray-800/50 hover:bg-gray-700/50 px-3 py-1.5 rounded-md"
         >
           {isCopied ? (
-            <><CheckCircle className="w-4 h-4 text-green-500" /> Copied!</>
+            <><CheckCircle className="w-3.5 h-3.5 text-green-400" /> Copied!</>
           ) : (
-            <><Copy className="w-4 h-4" /> Copy</>
+            <><Copy className="w-3.5 h-3.5" /> Copy</>
           )}
         </button>
       </div>
-      <pre className="p-4 overflow-x-auto text-sm font-mono text-gray-300 leading-relaxed">
+      <pre className="p-6 overflow-x-auto text-[15px] font-mono text-gray-300 leading-relaxed">
         <code>{code}</code>
       </pre>
     </div>
@@ -36,15 +47,15 @@ const CodeBlock = ({ code, language }) => {
 
 const BlogPost = () => {
   const { slug } = useParams();
-
+  const { user, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [blogData, setBlogData] = useState(null);
 
-  // --- NEW STATE FOR LIKES ---
   const [viewsCount, setViewsCount] = useState(0);
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -53,21 +64,16 @@ const BlogPost = () => {
       try {
         const token = localStorage.getItem("accessToken");
         if (!token) {
-          alert("You must be logged in to publish a blog.");
+          alert("You must be logged in to view a blog.");
           return;
         }
         const blogRes = await axios.post(
           "http://localhost:5001/api/blog/blog-info",
           { slug },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         if (blogRes.data.success) {
           const blogContent = blogRes.data.blogContent;
-
           setBlogData({
             title: blogContent.title,
             author: blogContent.author,
@@ -77,7 +83,6 @@ const BlogPost = () => {
           setViewsCount(blogContent.views || 0);
           setLikesCount(blogContent.likes || 0);
           setIsLiked(blogContent.userHasLiked || false);
-
           await delay(1500);
         } else {
           alert("Unable to load the Blog");
@@ -92,7 +97,7 @@ const BlogPost = () => {
   }, [slug]);
 
   const handleLikeToggle = async () => {
-    if (isLiking) return; 
+    if (isLiking) return;
     const token = localStorage.getItem("accessToken");
     setIsLiking(true);
 
@@ -103,17 +108,12 @@ const BlogPost = () => {
     try {
       await axios.post("http://localhost:5001/api/blog/toggle-like",
         { slug },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (error) {
       console.error("Failed to toggle like", error);
       setIsLiked(!newIsLiked);
       setLikesCount(prev => !newIsLiked ? prev + 1 : prev - 1);
-      alert("Something went wrong while liking the post.");
     } finally {
       setIsLiking(false);
     }
@@ -122,107 +122,176 @@ const BlogPost = () => {
   const renderContentBlock = (block, index) => {
     switch (block.type) {
       case 'heading':
-        return <h2 key={index} className="text-2xl md:text-3xl font-bold text-gray-900 mt-10 mb-4">{block.text}</h2>;
+        return <h2 key={index} className="text-3xl font-extrabold text-gray-900 mt-14 mb-6 leading-tight">{block.text}</h2>;
       case 'paragraph':
-        return <p key={index} className="text-lg text-gray-700 leading-relaxed mb-6">{block.text}</p>;
+        return <p key={index} className="text-[20px] text-gray-800 leading-[1.8] tracking-[-0.01em] mb-8 font-serif">{block.text}</p>;
       case 'quote':
         return (
-          <blockquote key={index} className="border-l-4 border-indigo-500 bg-indigo-50/50 p-6 my-8 rounded-r-xl">
-            <p className="text-xl italic text-gray-800 font-medium">"{block.text}"</p>
+          <blockquote key={index} className="relative my-12 pl-8 py-2">
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 rounded-full"></div>
+            <p className="text-2xl italic text-gray-700 font-serif leading-relaxed">"{block.text}"</p>
           </blockquote>
         );
       case 'image':
         return (
-          <figure key={index} className="my-10">
-            <img src={block.text} alt={block.alt || 'Blog image'} className="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
-            {block.caption && <figcaption className="text-center text-sm text-gray-500 mt-3">{block.caption}</figcaption>}
+          <figure key={index} className="my-12">
+            <img src={block.text} alt={block.alt || 'Blog image'} className="w-full rounded-2xl shadow-lg object-cover bg-gray-50" />
+            {block.caption && <figcaption className="text-center text-sm font-medium text-gray-500 mt-4">{block.caption}</figcaption>}
           </figure>
         );
       case 'code':
-        return <CodeBlock key={index} code={block.text} />;
+        return <CodeBlock key={index} code={block.text} language={block.language} />;
       default:
-        console.warn(`Unknown block type: ${block.type}`);
         return null;
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="w-12 h-12 bg-indigo-100 rounded-full mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-48 mb-2"></div>
-          <div className="h-3 bg-gray-100 rounded w-32"></div>
+      <div className="min-h-screen bg-white max-w-3xl mx-auto px-4 pt-24">
+        <div className="animate-pulse space-y-8">
+          <div className="h-12 bg-gray-100 rounded-xl w-3/4"></div>
+          <div className="flex items-center gap-4 py-4">
+            <div className="w-12 h-12 bg-gray-100 rounded-full"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-100 rounded w-32"></div>
+              <div className="h-3 bg-gray-50 rounded w-24"></div>
+            </div>
+          </div>
+          <div className="space-y-4 pt-8">
+            <div className="h-4 bg-gray-100 rounded w-full"></div>
+            <div className="h-4 bg-gray-100 rounded w-full"></div>
+            <div className="h-4 bg-gray-100 rounded w-5/6"></div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans pb-20">
-      <header className="border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-40">
-        <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-gray-500 hover:text-indigo-600 transition-colors font-medium">
-            <ArrowLeft className="w-4 h-4" /> Back to Feed
+    <div className="min-h-screen bg-white pb-24 selection:bg-indigo-100 selection:text-indigo-900">
+
+      {/* Top Navigation */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 transition-all">
+        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 group">
+            <BrainCircuit className="h-7 w-7 text-indigo-600 group-hover:scale-110 transition-transform" />
+            <span className="text-xl font-extrabold tracking-tight text-gray-900">
+              BlogSpire
+            </span>
           </Link>
-          <div className="flex items-center gap-2">
-            <BrainCircuit className="h-5 w-5 text-indigo-600" />
-            <span className="font-bold text-gray-900">NexusAI</span>
+
+          <div className="relative">
+            <div
+              className="flex items-center gap-3 cursor-pointer group p-1.5 rounded-full hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {user.profilePicture ? (
+                <img src={user.profilePicture} alt="Author" className="w-8 h-8 rounded-full object-cover shadow-sm" />
+              ) : (
+                <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                  {user.name[0]}
+                </div>
+              )}
+            </div>
+
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] py-2 border border-gray-100 z-50">
+                <div className="px-4 py-3 border-b border-gray-50 mb-1">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
+                  <p className="text-xs text-gray-500 truncate">@{user.username}</p>
+                </div>
+                <Link
+                  to={`/${user.role}/${user.username}`}
+                  className="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-indigo-600 transition-colors"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  My Profile
+                </Link>
+                <button
+                  onClick={logout}
+                  className="block w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-12">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
+
+        {/* Article Header */}
         <header className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-8">
+          <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors mb-8 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-full">
+            <ArrowLeft className="w-4 h-4" /> Back to reading
+          </Link>
+
+          <h1 className="text-4xl md:text-[3.5rem] font-extrabold text-gray-900 tracking-tight leading-[1.1] mb-8">
             {blogData.title}
           </h1>
 
-          <div className="flex items-center gap-4 py-4 border-y border-gray-100">
-            {blogData.author.avatar ? (
-              <img
-                src={blogData.author.avatar}
-                alt={blogData.author.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {blogData.author.name[0]}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 py-6 border-y border-gray-100">
+            <Link to={`/author/${blogData.author.username}`}>
+
+              <div className="flex items-center gap-4">
+                {blogData.author.avatar ? (
+                  <img src={blogData.author.avatar} alt={blogData.author.name} className="w-12 h-12 rounded-full object-cover shadow-sm" />
+                ) : (
+                  <div className="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-lg">
+                    {blogData.author.name[0]}
+                  </div>
+                )}
+                <div>
+                  <div className="font-semibold text-gray-900 text-base">
+                    {blogData.author.name}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mt-1 font-medium">
+                    <span>{blogData.readTime || '5'} min read</span>
+                    <span className="text-gray-300">•</span>
+                    <span>
+                      {new Date(blogData.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
               </div>
-            )}
-            <div>
-              <div className="font-bold text-gray-900 flex items-center gap-1">
-                <User className="w-4 h-4 text-gray-400" /> {blogData.author.name}
+            </Link>
+
+            {/* Top action bar */}
+            <div className="flex items-center gap-4 text-gray-500">
+              <div className="flex items-center gap-1.5 text-sm font-medium">
+                <Eye className="w-4 h-4" /> {viewsCount}
               </div>
-              <div className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-                <Calendar className="w-3.5 h-3.5" />
-                {new Date(blogData.createdAt).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
-              </div>
-              <div className='text-sm text-gray-500 flex items-center gap-1 mt-0.5'>{viewsCount} views</div>
+              <button onClick={handleLikeToggle} className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${isLiked ? 'text-red-600' : 'hover:text-gray-900'}`}>
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} /> {likesCount}
+              </button>
             </div>
           </div>
         </header>
 
-        <article className="prose prose-lg max-w-none">
+        {/* Article Body */}
+        <article className="prose-container">
           {blogData.content.map((block, index) => renderContentBlock(block, index))}
         </article>
 
-        <div className="mt-16 pt-8 border-t border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        {/* Bottom Actions */}
+        <div className="mt-20 pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
             <button
               onClick={handleLikeToggle}
               disabled={isLiking}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all shadow-sm ${isLiked
-                ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold transition-all ${isLiked
+                  ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm'
                 }`}
             >
-              <Heart className={`w-6 h-6 transition-all ${isLiked ? 'fill-current scale-110' : 'scale-100'}`} />
+              <Heart className={`w-5 h-5 transition-transform ${isLiked ? 'fill-current scale-110' : 'scale-100'}`} />
               <span>{likesCount} {likesCount === 1 ? 'Like' : 'Likes'}</span>
+            </button>
+
+            <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all">
+              <Share2 className="w-5 h-5" /> Share
             </button>
           </div>
         </div>

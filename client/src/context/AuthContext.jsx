@@ -46,13 +46,13 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const handleLogin = (token, userData) => {
-        localStorage.setItem('token', token);
+        localStorage.setItem('accessToken', token);
         setIsAuthenticated(true);
         setUser(userData);
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
         setIsAuthenticated(false);
         setUser(null);
     };

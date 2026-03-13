@@ -54,7 +54,7 @@ export const blogInfo = async (req, res) => {
             { slug },
             { $inc: { views: 1 } },
             { new: true }
-        ).populate("author", "name profilePicture");
+        ).populate("author", "name username profilePicture");
 
         if (!blog) {
             return res.status(404).json({ message: "Blog not found" });
@@ -67,6 +67,7 @@ export const blogInfo = async (req, res) => {
                 title: blog.title,
                 author: {
                     name: blog.author.name,
+                    username: blog.author.username,
                     avatar: blog.author.profilePicture
                 },
                 createdAt: blog.createdAt,
@@ -133,8 +134,7 @@ export const toggleLike = async (req, res) => {
 
 export const userProfile = async (req, res) => {
     try {
-        //const userDecode = verifyToken(req); //will be used when we need to verify wheather the cuurent user and the profile opened is same or not so that, we can include the option of edit profile,etc
-        const { username, role } = req.body;
+        const { username, currentUserID, role } = req.body;
         const userInfo = await User.findOne({ username });
 
         if (!userInfo) {
@@ -148,7 +148,6 @@ export const userProfile = async (req, res) => {
             });
         }
         const blogs = await Blog.find({ author: userInfo._id });
-        console.log(blogs);
 
         res.json({
             success: true,
@@ -156,6 +155,9 @@ export const userProfile = async (req, res) => {
                 name: userInfo.name,
                 bio: userInfo.bio,
                 profilePicture: userInfo.profilePicture,
+                followers: userInfo.followers,
+                following: userInfo.following,
+                isFollowed: userInfo.followers.some(id => id.equals(currentUserID))
             },
             blogs: blogs
         })
@@ -166,11 +168,61 @@ export const userProfile = async (req, res) => {
     }
 }
 
+export const toggleFollow = async (req, res) => {
+    try {
+        const { profileUser, currentUserID } = req.body;
+        const user = await User.findOne({ username: profileUser });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const checkFollowing = user.followers.some(id => id.equals(currentUserID));
+
+        if (checkFollowing) {
+            await User.updateOne(
+                { username: profileUser },
+                {
+                    $pull: { followers: currentUserID },
+                },
+            )
+            await User.updateOne(
+                { _id: currentUserID },
+                {
+                    $pull: { following: user._id },
+                },
+            )
+
+        } else {
+            await User.updateOne(
+                { username: profileUser },
+                {
+                    $addToSet: { followers: currentUserID },
+                },
+
+            )
+            await User.updateOne(
+                { _id: currentUserID },
+                {
+                    $addToSet: { following: user._id },
+                },
+
+            )
+        }
+        res.json({success:true})
+
+    } catch (error) {
+        console.error("Error toggling like:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+
 export const getFeed = async (req, res) => {
     try {
         const blogs = await Blog.find()
             .sort({ createdAt: -1 })
-            .populate('author', 'name profilePicture')
+            .populate('author', 'name username profilePicture')
             .exec();
 
         res.json({
