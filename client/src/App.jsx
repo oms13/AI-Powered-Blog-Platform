@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
 
 import './App.css';
+import AboutPage from './Pages/AboutPage.jsx';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<AboutPage/>}/>
           <Route
             path="/login"
             element={<PublicRoute><AuthPage mode={true} /></PublicRoute>}

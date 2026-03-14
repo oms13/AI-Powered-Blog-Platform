@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   // 1. Tell Tailwind exactly which files contain your CSS class names
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

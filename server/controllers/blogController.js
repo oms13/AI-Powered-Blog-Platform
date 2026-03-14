@@ -64,6 +64,7 @@ export const blogInfo = async (req, res) => {
         res.json({
             success: true,
             blogContent: {
+                _id: blog._id,
                 title: blog.title,
                 author: {
                     name: blog.author.name,
@@ -77,6 +78,7 @@ export const blogInfo = async (req, res) => {
                 })),
                 likes: blog.likes,
                 views: blog.views,
+                comments: blog.comments,
                 userHasLiked: blog.userLiked.some(id => id.equals(user.id))
             }
         });
@@ -211,11 +213,176 @@ export const toggleFollow = async (req, res) => {
 
             )
         }
-        res.json({success:true})
+        res.json({ success: true })
 
     } catch (error) {
         console.error("Error toggling like:", error);
         res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+
+export const comment = async (req, res) => {
+    try {
+        const { userID, blogId, content } = req.body;
+
+        if (!blogId || !content || !content.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Blog ID and comment content are required."
+            });
+        }
+
+        if (!userID) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized. User ID is missing."
+            });
+        }
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                message: "Blog not found."
+            });
+        }
+
+        const newComment = {
+            user_id: userID,
+            content: content.trim(),
+            likes: [],
+        };
+
+        blog.comments.push(newComment);
+        await blog.save();
+
+        await blog.populate({
+            path: 'comments.user_id',
+            select: 'name username profilePicture'
+        });
+
+        const addedComment = blog.comments[blog.comments.length - 1];
+
+        return res.status(200).json({
+            success: true,
+            message: "Comment added successfully",
+            comment: addedComment
+        });
+
+    } catch (error) {
+        console.error("Error in comment controller:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error while adding the comment."
+        });
+    }
+};
+
+export const getComments = async (req, res) => {
+    try {
+        const { blogId } = req.params;
+
+        const blog = await Blog.findById(blogId).populate(
+            'comments.user_id',
+            'name username profilePicture role'
+        );
+
+        if (!blog) {
+            return res.status(404).json({ success: false, message: "Blog not found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            comments: blog.comments
+        });
+
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+export const deleteComment = async (req, res) => {
+    try {
+        const { blogId, commentId } = req.params;
+        const { userID } = req.body;
+
+        if (!userID) {
+            return res.status(401).json({ success: false, message: "Unauthorized." });
+        }
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ success: false, message: "Blog not found." });
+        }
+
+        const comment = blog.comments.id(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ success: false, message: "Comment not found." });
+        }
+
+        if (comment.user_id.toString() !== userID.toString()) {
+            return res.status(403).json({ success: false, message: "You are not authorized to delete this comment." });
+        }
+
+        blog.comments.pull(commentId);
+
+        await blog.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Comment deleted successfully."
+        });
+
+    } catch (error) {
+        console.error("Error in deleteComment:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error while deleting the comment."
+        });
+    }
+};
+
+
+export const toggleCommentLike = async (req, res) => {
+    try {
+        const { blogId, commentId, userID } = req.body;
+
+        if (!blogId || !commentId || !userID) {
+            return res.status(400).json({ success: false, message: "Blog ID, Comment ID, and User ID are required." });
+        }
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ success: false, message: "Blog not found." });
+        }
+
+        const comment = blog.comments.id(commentId);
+        if (!comment) {
+            return res.status(404).json({ success: false, message: "Comment not found." });
+        }
+
+        const hasLiked = comment.likes.includes(userID);
+
+        if (hasLiked) {
+            comment.likes = comment.likes.filter(id => id.toString() !== userID.toString());
+        } else {
+            comment.likes.push(userID);
+        }
+
+        await blog.save();
+
+        return res.status(200).json({
+            success: true,
+            message: hasLiked ? "Comment unliked" : "Comment liked",
+            likes: comment.likes
+        });
+
+    } catch (error) {
+        console.error("Error toggling comment like:", error);
+        return res.status(500).json({ success: false, message: "Server error while toggling comment like." });
     }
 };
 
