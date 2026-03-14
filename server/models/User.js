@@ -53,6 +53,10 @@ const userSchema = new mongoose.Schema({
         //   message: "Profile picture must be a valid URL"
         // }
     },
+    coverPicture:{
+        type:String,
+        default: '',
+    },
 
     bio: {
         type: String,

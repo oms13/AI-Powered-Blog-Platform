@@ -21,7 +21,7 @@ const FeedPage = () => {
         } else {
           console.error("Failed to load feed");
         }
-        await delay(1000); // Slight delay for smooth transition
+        await delay(1000); 
       } catch (error) {
         console.error("Error fetching feed:", error);
       } finally {
@@ -33,7 +33,6 @@ const FeedPage = () => {
   }, []);
 
   const getExcerpt = (content) => {
-    // Added safety check in case content isn't properly formatted
     if (!Array.isArray(content)) return "Read more to explore this article...";
     const paragraph = content.find(block => block.type === "paragraph");
     if (!paragraph || !paragraph.content) return "Read more to explore this article...";
@@ -43,7 +42,6 @@ const FeedPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-32 px-4">
-        {/* Professional Skeleton Loader */}
         <div className="w-full max-w-4xl space-y-8">
           {[1, 2, 3].map((skeleton) => (
             <div key={skeleton} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-6 animate-pulse">
@@ -69,7 +67,6 @@ const FeedPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-24 selection:bg-indigo-100 selection:text-indigo-900">
 
-      {/* Top Navigation - Synchronized with UserPage & BlogPost */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 transition-all">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
@@ -120,7 +117,6 @@ const FeedPage = () => {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
 
-        {/* Hero Section */}
         <div className="mb-12 border-b border-gray-200 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
@@ -133,7 +129,6 @@ const FeedPage = () => {
           </div>
         </div>
 
-        {/* Blog Feed */}
         {blogs.length === 0 ? (
           <div className="text-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center">
              <div className="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mb-4">
@@ -154,11 +149,9 @@ const FeedPage = () => {
                 key={blog._id}
                 className="bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300 flex flex-col sm:flex-row overflow-hidden group"
               >
-                {/* Text Content */}
                 <div className="p-8 md:p-10 flex-grow flex flex-col justify-between order-2 sm:order-1">
 
                   <div>
-                    {/* Author & Date Row */}
                     <div className="flex items-center gap-3 mb-5">
                       <Link to={`/author/${blog.author.username}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                         {blog.author?.profilePicture ? (
@@ -177,7 +170,6 @@ const FeedPage = () => {
                       </span>
                     </div>
 
-                    {/* Title & Excerpt */}
                     <Link to={`/blog/${blog.slug}`} className="block group-hover:text-indigo-600 transition-colors">
                       <h2 className="text-2xl md:text-[1.75rem] font-extrabold text-gray-900 mb-4 leading-tight tracking-tight">
                         {blog.title}
@@ -188,7 +180,6 @@ const FeedPage = () => {
                     </p>
                   </div>
 
-                  {/* Footer Row */}
                   <div className="pt-5 border-t border-gray-50 flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-4 text-gray-500 font-medium text-sm">
                       <span className="flex items-center gap-1.5">

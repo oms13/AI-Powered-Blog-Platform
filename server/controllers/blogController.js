@@ -142,7 +142,8 @@ export const userProfile = async (req, res) => {
                 message: `User ${username} not found`
             });
         }
-        if (userInfo.role !== role) {
+        console.log(userInfo.role, role);
+        if (currentUserID === userInfo._id && userInfo.role !== role) {
             return res.json({
                 message: `${username} not found for ${role}`
             });
@@ -155,6 +156,7 @@ export const userProfile = async (req, res) => {
                 name: userInfo.name,
                 bio: userInfo.bio,
                 profilePicture: userInfo.profilePicture,
+                coverPicture: userInfo.coverPicture,
                 followers: userInfo.followers,
                 following: userInfo.following,
                 isFollowed: userInfo.followers.some(id => id.equals(currentUserID))

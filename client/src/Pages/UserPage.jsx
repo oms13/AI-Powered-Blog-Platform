@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { 
-  BrainCircuit, FileText, PlusCircle, ArrowLeft, 
+import {
+  BrainCircuit, FileText, PlusCircle, ArrowLeft,
   Settings, LogOut, User as UserIcon, Mail, UserPlus, Check
 } from 'lucide-react';
 import axios from 'axios';
@@ -11,12 +11,11 @@ const UserPage = ({ role }) => {
   const { user, logout } = useAuth();
   const { username } = useParams();
   const navigate = useNavigate();
-  
+
   const [isUser, setIsUser] = useState(false);
-  const [userRole, setUserRole] = useState(role);
   const [userInfo, setUserInfo] = useState(null);
   const [userBlogs, setUserBlogs] = useState([]);
-  
+
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -27,26 +26,32 @@ const UserPage = ({ role }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setUserInfo(null); 
+      
       try {
         const userRes = await axios.post("http://localhost:5001/api/blog/user-profile",
-          { username, currentUserID: user._id, role: userRole }
+          { username, currentUserID: user._id, role: role }
         );
+        
+        await delay(1000);
         if (userRes.data.success) {
           const reqUser = userRes.data.user;
           const blogs = userRes.data.blogs;
+          
           setUserInfo({
             name: reqUser.name,
             bio: reqUser.bio || "This writer hasn't added a bio yet.",
             profilePicture: reqUser.profilePicture,
+            coverPicture: reqUser.coverPicture,
           });
+          
           setFollowersCount(reqUser.followers.length);
           setFollowingCount(reqUser.following.length);
           setIsFollowing(reqUser.isFollowed);
           setUserBlogs(blogs);
-          if (username === user.username) {
-            setIsUser(true);
-          }
-          await delay(1000); // slightly reduced delay for better UX
+          
+          setIsUser(username === user.username);
+          
         } else {
           alert(userRes.data.message);
         }
@@ -54,8 +59,9 @@ const UserPage = ({ role }) => {
         console.error(error);
       }
     };
+    
     fetchData();
-  }, [username, user._id, user.username, userRole]);
+  }, [username, user._id, user.username, role]); 
 
   const getExcerpt = (content) => {
     if (!Array.isArray(content)) return "";
@@ -80,8 +86,8 @@ const UserPage = ({ role }) => {
       const res = await axios.post("http://localhost:5001/api/blog/toggle-follow",
         { profileUser: username, currentUserID: user._id }
       );
-      if(res.data.success){
-        console.log("Done")
+      if (res.data.success) {
+        console.log("Done");
       }
     } catch (error) {
       console.error("Failed to toggle Follow", error);
@@ -113,7 +119,6 @@ const UserPage = ({ role }) => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20 selection:bg-indigo-100 selection:text-indigo-900">
 
-      {/* Top Navigation */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 transition-all">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
@@ -122,7 +127,7 @@ const UserPage = ({ role }) => {
               BlogSpire
             </span>
           </Link>
-          
+
           <div className="relative">
             <div
               className="flex items-center gap-3 cursor-pointer group p-1.5 rounded-full hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
@@ -146,7 +151,7 @@ const UserPage = ({ role }) => {
                 <Link
                   to={`/${user.role}/${user.username}`}
                   className="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-indigo-600 transition-colors"
-                  onClick={() => setIsDropdownOpen(false)}
+                  onClick={() => { setIsDropdownOpen(false) }}
                 >
                   My Profile
                 </Link>
@@ -163,21 +168,27 @@ const UserPage = ({ role }) => {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 mt-8">
-        
+
         <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 transition-colors mb-6 bg-white border border-gray-200 hover:border-indigo-200 shadow-sm px-4 py-2 rounded-full">
           <ArrowLeft className="w-4 h-4" /> Back to Feed
         </Link>
 
-        {/* --- HERO PROFILE SECTION --- */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-12 relative">
-          {/* Cover Header */}
-          <div className="h-32 sm:h-48 w-full bg-gradient-to-r from-indigo-100 via-purple-50 to-indigo-50 relative">
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:16px_16px]"></div>
+          <div className="h-32 sm:h-48  w-full bg-gradient-to-r from-indigo-100 via-purple-50 to-indigo-50 relative overflow-hidden">
+            {userInfo.coverPicture ? (
+              <img
+                src={userInfo.coverPicture}
+                alt="Cover Banner"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            )}
           </div>
-          
+
           <div className="px-6 sm:px-10 pb-8">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 -mt-16 sm:-mt-20 relative z-10">
-              
+
               <div className="flex items-end gap-5">
                 {userInfo.profilePicture ? (
                   <img
@@ -190,21 +201,20 @@ const UserPage = ({ role }) => {
                     {userInfo.name[0]}
                   </div>
                 )}
-                
+
                 <div className="pb-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">{userInfo.name}</h1>
                   <p className="text-gray-500 font-medium">@{username}</p>
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pb-2">
                 {isUser ? (
                   <>
                     <button className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-2 px-5 rounded-full transition-all shadow-sm">
                       <Settings className="w-4 h-4" /> Edit Profile
                     </button>
-                    {userRole === 'author' && (
+                    {user.role === 'author' && (
                       <button
                         onClick={handleCreateClick}
                         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-full transition-all shadow-sm"
@@ -223,7 +233,7 @@ const UserPage = ({ role }) => {
                         onClick={handleFollowToggle}
                         disabled={isClickFollow}
                         className="flex items-center gap-2 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-800 font-semibold py-2 px-6 rounded-full transition-all shadow-sm group">
-                        <Check className="w-4 h-4 group-hover:hidden" /> 
+                        <Check className="w-4 h-4 group-hover:hidden" />
                         <span className="group-hover:hidden">Following</span>
                         <span className="hidden group-hover:block">Unfollow</span>
                       </button>
@@ -240,12 +250,11 @@ const UserPage = ({ role }) => {
               </div>
             </div>
 
-            {/* Bio & Stats */}
             <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-t border-gray-100 pt-6">
               <p className="text-gray-600 max-w-xl text-[15px] leading-relaxed">
                 {userInfo.bio}
               </p>
-              
+
               <div className="flex items-center gap-6 bg-gray-50 px-6 py-3 rounded-2xl border border-gray-100 shrink-0">
                 <div className="flex flex-col items-center">
                   <span className="text-xl font-bold text-gray-900">{followersCount}</span>
@@ -261,11 +270,10 @@ const UserPage = ({ role }) => {
           </div>
         </div>
 
-        {/* --- PUBLISHED BLOGS LIST --- */}
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-indigo-500" /> 
+              <FileText className="w-5 h-5 text-indigo-500" />
               {isUser ? "Your Publications" : `Articles by ${userInfo.name}`}
             </h2>
             <span className="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
@@ -282,7 +290,7 @@ const UserPage = ({ role }) => {
               <p className="text-gray-500">
                 {isUser ? "You haven't published any blogs. Start writing today!" : "This user hasn't published anything yet."}
               </p>
-              {isUser && userRole === 'author' && (
+              {isUser && user.role === 'author' && (
                 <button onClick={handleCreateClick} className="mt-6 font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-6 py-2 rounded-full transition-colors">
                   Start your first post
                 </button>
@@ -296,7 +304,6 @@ const UserPage = ({ role }) => {
                   onClick={() => navigate(`/blog/${blog.slug}`)}
                   className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer group flex flex-col sm:flex-row overflow-hidden"
                 >
-                  {/* Text Content */}
                   <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between order-2 sm:order-1">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors leading-tight tracking-tight">
@@ -316,7 +323,6 @@ const UserPage = ({ role }) => {
                     </div>
                   </div>
 
-                  {/* Thumbnail Image */}
                   {blog.coverImage && (
                     <div className="w-full sm:w-64 h-48 sm:h-auto overflow-hidden order-1 sm:order-2 shrink-0 border-b sm:border-b-0 sm:border-l border-gray-100">
                       <img

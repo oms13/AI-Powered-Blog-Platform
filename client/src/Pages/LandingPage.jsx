@@ -5,18 +5,15 @@ import {
     ShieldCheck, Zap, ArrowRight, Github, Twitter, Sparkles 
 } from 'lucide-react';
 
-// GSAP Imports
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
-// Swiper Imports
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectFade, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
-// Register ScrollTrigger globally
 gsap.registerPlugin(ScrollTrigger);
 
 const LandingPage = () => {
@@ -26,7 +23,6 @@ const LandingPage = () => {
     useGSAP(() => {
         if (!containerRef.current) return;
 
-        // --- 1. Hero Entrance Animations ---
         const heroTl = gsap.timeline();
         
         heroTl.fromTo('.hero-badge', 
@@ -45,7 +41,6 @@ const LandingPage = () => {
               { x: 40, opacity: 0 }, 
               { x: 0, opacity: 1, duration: 1, ease: 'power3.out' }, "-=0.8");
 
-        // --- 2. Floating Background Blobs ---
         gsap.to('.blob-1', {
             y: "random(-20, 20)", x: "random(-20, 20)", rotation: "random(-10, 10)",
             duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut"
@@ -94,7 +89,6 @@ const LandingPage = () => {
 
     }, { scope: containerRef });
 
-    // Placeholder images for the Swiper Carousel
     const heroImages = [
         "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=1200", 
         "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=1200", 
@@ -104,7 +98,6 @@ const LandingPage = () => {
     return (
         <div ref={containerRef} className="min-h-screen bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
 
-            {/* --- HEADER --- */}
             <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
@@ -133,7 +126,6 @@ const LandingPage = () => {
                 </div>
             </header>
 
-            {/* --- HERO SECTION --- */}
             <section id='home' className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden flex items-center min-h-[90vh]">
                 <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                     <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-40"></div>
@@ -199,7 +191,6 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* --- FEATURES SECTION --- */}
             <section id="features" className="features-section py-32 bg-white relative z-10 border-t border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-20 max-w-3xl mx-auto">
@@ -232,7 +223,6 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* --- CTA SECTION --- */}
             <section className="cta-section py-32 bg-gray-900 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-600/20 rounded-full filter blur-[120px] translate-x-1/3 -translate-y-1/3"></div>
                 
@@ -249,7 +239,6 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* --- FOOTER --- */}
             <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 md:gap-0 border-b border-gray-100 pb-12">

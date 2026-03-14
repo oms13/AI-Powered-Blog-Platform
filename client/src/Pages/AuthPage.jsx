@@ -26,7 +26,7 @@ const AuthPage = ({ mode }) => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        if (error) setError(''); // Clear error when user starts typing
+        if (error) setError(''); 
     };
 
     const toggleMode = () => {
@@ -70,14 +70,12 @@ const AuthPage = ({ mode }) => {
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
 
-            {/* Subtle Professional Background */}
             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-50"></div>
             <div className="absolute top-[-15%] left-[-10%] w-[500px] h-[500px] bg-purple-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
             <div className="absolute bottom-[-15%] right-[-10%] w-[500px] h-[500px] bg-indigo-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-2000"></div>
 
             <div className="bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] w-full max-w-[440px] p-8 sm:p-10 relative z-10 border border-white">
 
-                {/* Header */}
                 <div className="flex flex-col items-center mb-8 text-center">
                     <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-5 shadow-inner border border-indigo-100/50">
                         <BrainCircuit className="h-8 w-8 text-indigo-600" />
@@ -92,7 +90,6 @@ const AuthPage = ({ mode }) => {
                     </p>
                 </div>
 
-                {/* Error Banner */}
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
                         <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -102,7 +99,6 @@ const AuthPage = ({ mode }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
 
-                    {/* Name Field (Signup Only) */}
                     {!isLogin && (
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -121,7 +117,6 @@ const AuthPage = ({ mode }) => {
                         </div>
                     )}
 
-                    {/* Username Field */}
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <User className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
@@ -138,7 +133,6 @@ const AuthPage = ({ mode }) => {
                         />
                     </div>
 
-                    {/* Email Field (Signup Only) */}
                     {!isLogin && (
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -157,7 +151,6 @@ const AuthPage = ({ mode }) => {
                         </div>
                     )}
 
-                    {/* Password Field */}
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
@@ -182,7 +175,6 @@ const AuthPage = ({ mode }) => {
                         </button>
                     </div>
 
-                    {/* Role Dropdown (Signup Only) */}
                     {!isLogin && (
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -203,7 +195,6 @@ const AuthPage = ({ mode }) => {
                         </div>
                     )}
 
-                    {/* Forgot Password Link */}
                     {isLogin && (
                         <div className="flex justify-end pt-1">
                             <button type="button" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
@@ -212,7 +203,6 @@ const AuthPage = ({ mode }) => {
                         </div>
                     )}
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={isLoading}
@@ -232,7 +222,6 @@ const AuthPage = ({ mode }) => {
                     </button>
                 </form>
 
-                {/* Footer Toggle */}
                 <div className="mt-8 text-center text-[15px] text-gray-600">
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
                     <button

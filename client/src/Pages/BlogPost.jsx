@@ -171,7 +171,6 @@ const BlogPost = () => {
   return (
     <div className="min-h-screen bg-white pb-24 selection:bg-indigo-100 selection:text-indigo-900">
 
-      {/* Top Navigation */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 transition-all">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
@@ -222,7 +221,6 @@ const BlogPost = () => {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
 
-        {/* Article Header */}
         <header className="mb-12">
           <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors mb-8 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-full">
             <ArrowLeft className="w-4 h-4" /> Back to reading
@@ -258,7 +256,6 @@ const BlogPost = () => {
               </div>
             </Link>
 
-            {/* Top action bar */}
             <div className="flex items-center gap-4 text-gray-500">
               <div className="flex items-center gap-1.5 text-sm font-medium">
                 <Eye className="w-4 h-4" /> {viewsCount}
@@ -270,12 +267,10 @@ const BlogPost = () => {
           </div>
         </header>
 
-        {/* Article Body */}
         <article className="prose-container">
           {blogData.content.map((block, index) => renderContentBlock(block, index))}
         </article>
 
-        {/* Bottom Actions */}
         <div className="mt-20 pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <button

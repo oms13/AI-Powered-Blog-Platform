@@ -36,7 +36,6 @@ export default function CreateBlog() {
     }
   };
 
-  // Auto-resize textarea function
   const handleAutoResize = (e) => {
     e.target.style.height = 'auto';
     e.target.style.height = `${e.target.scrollHeight}px`;
@@ -123,7 +122,6 @@ export default function CreateBlog() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20">
-      {/* Top Navigation Bar */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 h-16 flex justify-between items-center">
           <Link to="/blog" className="flex items-center gap-2 text-gray-500 hover:text-indigo-600 transition-colors font-medium">
@@ -143,7 +141,6 @@ export default function CreateBlog() {
 
       <main className="max-w-4xl mx-auto px-4 mt-8 space-y-8">
         
-        {/* Title & Thumbnail Section */}
         <section className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
           <input
             type="text"
@@ -167,12 +164,10 @@ export default function CreateBlog() {
           )}
         </section>
 
-        {/* Content Blocks Section */}
         <section className="space-y-6">
           {blocks.map((block) => (
             <div key={block.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 group relative hover:border-indigo-200 transition-colors">
               
-              {/* Block Header / Controls */}
               <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-50">
                 <span className="text-xs font-bold uppercase tracking-wider text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full">
                   {block.type}
@@ -197,7 +192,6 @@ export default function CreateBlog() {
                 </div>
               </div>
 
-              {/* Block Inputs */}
               <div className="pt-2">
                 {block.type === 'paragraph' && (
                   <textarea
@@ -251,7 +245,6 @@ export default function CreateBlog() {
           ))}
         </section>
 
-        {/* Floating Toolbar to add blocks */}
         <section className="flex flex-col items-center py-8">
           <p className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Add New Section</p>
           <div className="flex flex-wrap justify-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-gray-200">
@@ -273,7 +266,6 @@ export default function CreateBlog() {
           </div>
         </section>
 
-        {/* Tags Section */}
         <section className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-bold text-gray-800">Tags & Categories</h3>
