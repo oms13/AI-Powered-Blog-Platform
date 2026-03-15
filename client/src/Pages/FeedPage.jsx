@@ -203,7 +203,7 @@ const FeedPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center pt-32 px-4 transition-colors duration-300">
-        <div className="w-full max-w-3xl space-y-8">
+        <div className="w-full max-w-4xl space-y-8">
           {[1, 2, 3].map((skeleton) => (
             <div key={skeleton} className="bg-white dark:bg-gray-900 rounded-[2rem] p-8 border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-6 animate-pulse">
               <div className="flex justify-between items-start">
@@ -284,7 +284,7 @@ const FeedPage = () => {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
 
         <div className="mb-12 border-b border-gray-200 dark:border-gray-800 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>

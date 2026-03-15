@@ -280,7 +280,7 @@ const BlogPost = () => {
   if (isLoading || !blogData) {
     return (
       <div className="min-h-screen w-full bg-white dark:bg-gray-950 pt-24 transition-colors duration-300">
-        <div className="max-w-3xl mx-auto px-4">
+        <div className="max-w-4xl mx-auto px-4">
           <div className="animate-pulse space-y-8">
             <div className="h-12 bg-gray-100 dark:bg-gray-800 rounded-xl w-3/4"></div>
             <div className="flex items-center gap-4 py-4">
@@ -356,7 +356,7 @@ const BlogPost = () => {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
 
         <header className="mb-12">
           <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors mb-8 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-4 py-2 rounded-full">
@@ -504,7 +504,6 @@ const BlogPost = () => {
                             </span>
                           </div>
                           
-                          {/* Delete Button */}
                           {user && comment.user_id?._id === user._id && (
                             <button 
                               onClick={() => handleDeleteComment(comment._id)}
