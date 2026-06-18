@@ -50,24 +50,45 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-  docker-build:
-    runs-on: ubuntu-latest
+  docker-build-and-push:
+  runs-on: ubuntu-latest
 
-    needs:
-      - frontend-build
-      - backend-build
+  needs:
+    - frontend-build
+    - backend-build
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  permissions:
+    contents: read
+    packages: write
 
-      - name: Build Frontend Docker Image
-        run: |
-          docker build \
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build Frontend Image
+      run: |
+        docker build \
           --build-arg VITE_API_URL=https://example.com \
-          -t blog-client ./client
+          -t ghcr.io/oms13/ai-powered-blog-platform-client:latest \
+          ./client
 
-      - name: Build Backend Docker Image
-        run: |
-          docker build \
-          -t blog-server ./server
+    - name: Push Frontend Image
+      run: |
+        docker push ghcr.io/oms13/ai-powered-blog-platform-client:latest
+
+    - name: Build Backend Image
+      run: |
+        docker build \
+          -t ghcr.io/oms13/ai-powered-blog-platform-server:latest \
+          ./server
+
+    - name: Push Backend Image
+      run: |
+        docker push ghcr.io/oms13/ai-powered-blog-platform-server:latest
