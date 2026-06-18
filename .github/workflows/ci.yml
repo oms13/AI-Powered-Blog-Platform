@@ -93,3 +93,9 @@ jobs:
         run: |
           docker push ghcr.io/oms13/ai-powered-blog-platform-server:latest
 
+      - name: Trigger Backend Deployment 
+        if: github.ref == 'refs/heads/main' 
+        run: curl -X POST "${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}" 
+      - name: Trigger Frontend Deployment 
+        if: github.ref == 'refs/heads/main' 
+        run: curl -X POST "${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}"
