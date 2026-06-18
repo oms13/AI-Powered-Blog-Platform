@@ -20,6 +20,7 @@ const AboutPage = () => {
 
     useGSAP(() => {
         if (!containerRef.current) return;
+        //hello
 
         const heroTl = gsap.timeline();
 
