@@ -47,7 +47,7 @@ export default function CreateBlog() {
     if (!promptText) return;
     try {
       updateBlock(id, '✨ Generating...');
-      const aiRes = await axios.post('http://localhost:5001/api/blog/aiService', { promptText, type });
+      const aiRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/aiService`, { promptText, type });
       if (aiRes.data.success) {
         updateBlock(id, aiRes.data.aiText);
       }
@@ -63,7 +63,7 @@ export default function CreateBlog() {
       return;
     }
     try {
-      const aiRes = await axios.post('http://localhost:5001/api/blog/aiService', { promptText: title, type: 'tag' });
+      const aiRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/aiService`, { promptText: title, type: 'tag' });
       if (aiRes.data.success) {
         setTags([...new Set([...tags, ...aiRes.data.aiText])]);
       }
@@ -103,7 +103,7 @@ export default function CreateBlog() {
       return;
     }
     try {
-      const publishRes = await axios.post('http://localhost:5001/api/blog/publish',
+      const publishRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/publish`,
         blogData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

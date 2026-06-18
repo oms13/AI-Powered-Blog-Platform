@@ -40,7 +40,7 @@ const UserPage = ({ role }) => {
       setUserInfo(null);
 
       try {
-        const userRes = await axios.post("http://localhost:5001/api/blog/user-profile",
+        const userRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/user-profile`,
           { username, currentUserID: user._id, role: role }
         );
 
@@ -94,7 +94,7 @@ const UserPage = ({ role }) => {
     setFollowersCount(prev => newIsFollowing ? prev + 1 : prev - 1);
 
     try {
-      const res = await axios.post("http://localhost:5001/api/blog/toggle-follow",
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/toggle-follow`,
         { profileUser: username, currentUserID: user._id }
       );
       if (res.data.success) {
@@ -129,7 +129,7 @@ const UserPage = ({ role }) => {
     const token = localStorage.getItem("accessToken");
 
     try {
-      const res = await axios.put("http://localhost:5001/api/auth/update-profile",
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/auth/update-profile`,
         { userId: user._id, ...editFormData },
         { headers: { Authorization: `Bearer ${token}` } }
       );

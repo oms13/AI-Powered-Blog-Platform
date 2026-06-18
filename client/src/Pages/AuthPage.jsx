@@ -44,8 +44,8 @@ const AuthPage = ({ mode }) => {
         
         try {
             const postPath = isLogin 
-                ? 'http://localhost:5001/api/auth/login' 
-                : 'http://localhost:5001/api/auth/signup';
+                ? `${import.meta.env.VITE_API_URL}/api/auth/login` 
+                : `${import.meta.env.VITE_API_URL}/api/auth/signup`;
                 
             const authRes = await axios.post(postPath, payload);
             

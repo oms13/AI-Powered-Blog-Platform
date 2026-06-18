@@ -43,7 +43,7 @@ const FeedPage = () => {
   useEffect(() => {
     const fetchFeed = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/api/blog/feed");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blog/feed`);
         if (response.data.success) {
           setBlogs(response.data.blogs);
         } else {
@@ -79,7 +79,7 @@ const FeedPage = () => {
       setIsLoadingComments(prev => ({ ...prev, [blogId]: true }));
 
       try {
-        const res = await axios.get(`http://localhost:5001/api/blog/comments/${blogId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/blog/comments/${blogId}`);
         if (res.data.success) {
           setFetchedComments(prev => ({
             ...prev,
@@ -112,7 +112,7 @@ const FeedPage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5001/api/blog/comment",
+        `${import.meta.env.VITE_API_URL}/api/blog/comment`,
         { userID: user._id, blogId, content },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -161,7 +161,7 @@ const FeedPage = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:5001/api/blog/comment/${blogId}/${commentId}`,
+        `${import.meta.env.VITE_API_URL}/api/blog/comment/${blogId}/${commentId}`,
         { userID: user._id }
       );
 

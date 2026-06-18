@@ -90,7 +90,7 @@ const BlogPost = () => {
         }
 
         const blogRes = await axios.post(
-          "http://localhost:5001/api/blog/blog-info",
+          `${import.meta.env.VITE_API_URL}/api/blog/blog-info`,
           { slug },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -109,7 +109,7 @@ const BlogPost = () => {
           setIsLiked(blogContent.userHasLiked || false);
 
           try {
-            const commentsRes = await axios.get(`http://localhost:5001/api/blog/comments/${blogContent._id}`);
+            const commentsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/blog/comments/${blogContent._id}`);
             if (commentsRes.data.success) {
               setComments(commentsRes.data.comments);
             }
@@ -142,7 +142,7 @@ const BlogPost = () => {
     setLikesCount(prev => newIsLiked ? prev + 1 : prev - 1);
 
     try {
-      await axios.post("http://localhost:5001/api/blog/toggle-like",
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/toggle-like`,
         { slug },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -160,7 +160,7 @@ const BlogPost = () => {
 
     setIsSubmittingComment(true);
     try {
-      const res = await axios.post("http://localhost:5001/api/blog/comment", { 
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/comment`, { 
         userID: user._id, 
         blogId: blogData._id, 
         content: commentInput 
@@ -204,7 +204,7 @@ const BlogPost = () => {
     if (!window.confirm("Are you sure you want to delete this comment?")) return;
     
     try {
-      const res = await axios.post(`http://localhost:5001/api/blog/comment/${blogData._id}/${commentId}`, { 
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/comment/${blogData._id}/${commentId}`, { 
         userID: user._id 
       });
 
@@ -239,7 +239,7 @@ const BlogPost = () => {
     }));
 
     try {
-      await axios.post("http://localhost:5001/api/blog/comment/like", { 
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/blog/comment/like`, { 
         blogId: blogData._id, 
         commentId, 
         userID: user._id 

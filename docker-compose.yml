@@ -1,0 +1,23 @@
+services:
+  backend:
+    build:
+      context: ./server
+    container_name: blog-backend
+    ports:
+      - "5001:5001"
+    environment:
+      PORT: 5001
+      MONGO_URI: ${MONGO_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+
+  frontend:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: http://localhost:5001
+    container_name: blog-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
